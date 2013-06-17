@@ -31,9 +31,18 @@ Authors
 
 These Python bindings were developed—building directly on the code released by
 `Kovács <http://www.konkoly.hu/staff/kovacs/eebls.f>`_—at the `SAMSI
-<http://samsi.info>`_ workshop: `Modern Statistical and Computational Methods
+<http://samsi.info>`_ workshop `Modern Statistical and Computational Methods
 for Analysis of Kepler
-<http://www.samsi.info/working-groups/kepler-working-group>`_
+<http://www.samsi.info/working-groups/kepler-working-group>`_ by
+
+* `Ruth Angus (Oxford) <https://github.com/RuthAngus>`_
+* `Dan Foreman-Mackey (NYU) <https://github.com/dfm>`_
+
+License
+-------
+
+The Python bindings are licensed under the `MIT License
+<https://github.com/dfm/python-bls/blob/master/LICENSE>`_.
 
 Basic Usage
 -----------
