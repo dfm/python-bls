@@ -26,7 +26,7 @@ if "interface" in sys.argv or not interface_exists:
 bls = Extension("bls._bls", ["bls/bls.pyf", "bls/eebls.f"])
 
 setup(
-    name="python-bls",
+    name="bls",
     url="https://github.com/dfm/python-bls",
     version="0.0.1",
     author="Dan Foreman-Mackey",
