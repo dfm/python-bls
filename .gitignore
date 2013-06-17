@@ -1,0 +1,5 @@
+.DS_Store
+*.pyc
+build
+*.so
+_*module.c
