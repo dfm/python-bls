@@ -45,6 +45,10 @@ def run_BLS():
     p.subplot(2,1,2)
     p.plot(f_1, convolved_bls)
     p.axvline(bper, color = '0.5')
+    for i in range(2, 10):
+        p.axvline(i*bper, color = 'y')
+    p.axvline(bper/2., color = 'y')
+    p.axvline(3*bper/2., color = 'y')
     print 'period = ', bper
     p.xlim(min(f_1), max(f_1))
     p.xlabel('Period')
@@ -120,7 +124,7 @@ def load_data(type):
 
 def compute_bls(time, lc):
     '''Calculate BLS'''
-    bls, f_1, nb = BLS(time, lc, fmin = (1./(50.0*1.1)))
+    bls, f_1, nb = BLS(time, lc)
     print 'Complete'
 
     bper = bls[1]
@@ -190,8 +194,8 @@ def cut_out_transits(time, lc, ingresses, egresses):
     qma = maximum transit duration, \
     fmin = minimum frequency '''
 
-def BLS(time, lc, df = 0.0001, nf = 50000,  nb = 200, qmi = 0.01,\
-        qma = 0.8, fmin = (1./(20.0*1.1))):
+def BLS(time, lc, df = 0.0001, nf = 500,  nb = 200, qmi = 0.01,\
+        qma = 0.8, fmin = (1./(400.0*1.1))):
 
     u = numpy.ones(len(time))
     v = numpy.ones(len(time))
