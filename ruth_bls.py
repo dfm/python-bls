@@ -8,7 +8,7 @@ import scipy.ndimage.filters
 import pylab as p
 from math import *
 import bls
-import filter
+#import filter
 from numpy.random import normal
 import atpy
 
