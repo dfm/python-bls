@@ -30,13 +30,8 @@ def run_BLS():
 
     print '1st pass bls...'
     ingresses, egresses, t_number, epoch, periods, bper, bpow, depth, qtran, \
-    duration, f_1, convolved_bls = compute_bls(time, lc)#, df = 0.01,\
-                                                        #nf = 500, qmi = 0.01, qma = 0.8, fmin = (1./(400.0*1.1)))
+        duration, f_1, convolved_bls = compute_bls(time, lc)
 
-# df = 0.01, nf = 5000,  nb = 200, qmi = 0.01,\
-#         qma = 0.8, fmin = (1./(400.0*1.1))):
-
-    print 'Complete'
    
     p.close(1)
     p.figure(1)
@@ -123,9 +118,10 @@ def load_data(type):
     return numpy.array(time), numpy.array(lc)
 
 
-def compute_bls(time, lc):#, df, nf, qmi, qma, fmin):
+def compute_bls(time, lc):
     '''Calculate BLS'''
-    bls, f_1, nb = BLS(time, lc)#, df, nf, qmi, qma, fmin)
+    bls, f_1, nb = BLS(time, lc, fmin = (1./(50.0*1.1)))
+    print 'Complete'
 
     bper = bls[1]
     bpow = bls[2]
@@ -194,8 +190,8 @@ def cut_out_transits(time, lc, ingresses, egresses):
     qma = maximum transit duration, \
     fmin = minimum frequency '''
 
-def BLS(time, lc, df = 0.01, nf = 5000,  nb = 200, qmi = 0.01,\
-        qma = 0.8, fmin = (1./(400.0*1.1))):
+def BLS(time, lc, df = 0.0001, nf = 50000,  nb = 200, qmi = 0.01,\
+        qma = 0.8, fmin = (1./(20.0*1.1))):
 
     u = numpy.ones(len(time))
     v = numpy.ones(len(time))
