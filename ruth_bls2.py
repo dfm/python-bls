@@ -11,6 +11,8 @@ import filter
 from numpy.random import normal
 import atpy
 
+print 'Dan sucks'
+
 gap_days = 0.02043365  # long cadence
 ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj'
 #ascii_file = 'KIC_005383248_long.dat'
