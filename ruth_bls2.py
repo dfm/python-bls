@@ -1,6 +1,5 @@
 # BLS wrapper
 
-import BLS
 import pyfits
 import numpy
 import scipy
@@ -14,8 +13,9 @@ import atpy
 
 gap_days = 0.02043365  # long cadence
 
-#ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj'
+ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj'
 #ascii_file = 'KIC_005383248_long.dat'
+#ascii_file = 'k7372635.dat'
 ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj/detrended'
 ascii_file = 'k2161400.dat'
 #ascii_file = 'nopl_k2161400.dat'
@@ -23,13 +23,16 @@ ascii_file = 'k2161400.dat'
 fits_DIR = '/Users/angusr/.kplr/data/old'
 fits_file = 'kplr006448890-2009259160929_llc.fits'
 
-def run_BLS():
+def run_BLS(Baines = False, type = 'ascii'):
 
     print 'Loading lc...'
-    time, lc = load_data(type = 'ascii')
+    time, lc = load_data(type)
     
     print 'Median normalise...'
     lc = lc/numpy.median(lc)
+
+    print 'Median filter...'
+    
 
     ''' Define parameters '''
     min_period = 300
@@ -68,58 +71,71 @@ def run_BLS():
     p.xlim(min(f_1), max(f_1))
     p.xlabel('Period')
 
-    print 'Folding lc ...'
-    Fold(time, lc, bper, ingresses, egresses, plot_time = numpy.zeros(len(time)), \
-         plot_lc = numpy.zeros(len(time)), figure = 2)
+    if Baines == False:
 
-    print 'Cutting out 1st planet transits...'
-    time, lc, plot_time, plot_lc = cut_out_transits(time, lc, ingresses, egresses)
+        p.close(2)
 
-    print 'Folding lc ...'
-    Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 3)
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time = numpy.zeros(len(time)), \
+             plot_lc = numpy.zeros(len(time)), figure = 2)
 
-    print 'Interpolating...'
-    time, lc = interpolate(time, lc, approx_duration)
+        print 'Cutting out 1st planet transits...'
+        time, lc, plot_time, plot_lc = cut_out_transits(time, lc, ingresses, egresses)
 
-    print 'Folding lc ...'
-    Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 4)
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 3)
 
-    # p.close(3)
-    # p.figure(3)
-    # p.plot(time,lc, 'k.')
-    # for i in range(len(ingresses)):
-    #     p.axvline(ingresses[i], color = 'c')
-    #     p.axvline(egresses[i], color = 'c')
+        print 'Interpolating...'
+        time, lc = interpolate(time, lc, approx_duration)
 
-    print '2nd pass bls...'
-    x = numpy.where(numpy.isfinite(time))
-    time = time[x[0]]; lc = lc[x[0]]
-    x = numpy.where(numpy.isfinite(lc))
-    time = time[x[0]]; lc = lc[x[0]]
-    # ingresses, egresses, t_number, epoch, periods, bper, bpow, depth, qtran, \
-    #     duration, f_1, convolved_bls = compute_bls(time, lc)
-    ingresses, egresses, t_number, epoch, periods, bper, bpow, depth, qtran, \
-        duration, f_1, convolved_bls, approx_duration = compute_bls(time, \
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 4)
+
+        freq_step =  0.000001
+
+        print '2nd pass bls...'
+        # ingresses, egresses, t_number, epoch, periods, bper, bpow, depth, qtran, \
+        #     duration, f_1, convolved_bls = compute_bls(time, lc)
+        ingresses, egresses, t_number, epoch, periods, bper, bpow, depth, qtran, \
+            duration, f_1, convolved_bls, approx_duration = compute_bls(time, \
                 lc, df = freq_step, nf =  (1./min_period)/freq_step,\
                 nb = 1400, qmi = float(min_duration_hours)/24./450., \
                 qma = float(max_duration_hours)/24./300., \
                 fmin = (1./(float(max_period)*1.1)))
 
-    p.close(5)
-    p.figure(5)
-    p.subplot(2,1,1)
-    p.plot(time,lc,".k")
-    p.ylabel('Flux')
-    p.xlabel('Time')
-    for i in range(len(ingresses)):
-        p.axvline(ingresses[i], color = 'c')
-        p.axvline(egresses[i], color = 'c')
-    p.subplot(2,1,2)
-    p.plot(f_1, convolved_bls)
-    p.axvline(bper, color = '0.5')
-    print 'period measurements = ', periods, bper
-    p.xlim(min(f_1), max(f_1))
-    p.xlabel('Period')
+        p.close(5)
+        p.figure(5)
+        p.subplot(2,1,1)
+        p.plot(time,lc,".k")
+        p.ylabel('Flux')
+        p.xlabel('Time')
+        for i in range(len(ingresses)):
+            p.axvline(ingresses[i], color = 'c')
+            p.axvline(egresses[i], color = 'c')
+        p.subplot(2,1,2)
+        p.plot(f_1, convolved_bls)
+        p.axvline(bper, color = '0.5')
+        print 'period measurements = ', periods, bper
+        p.xlim(min(f_1), max(f_1))
+        p.xlabel('Period')
+
+        p.close(3)
+
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time = numpy.zeros(len(time)), \
+             plot_lc = numpy.zeros(len(time)), figure = 2)
+
+        print 'Cutting out 2nd planet transits...'
+        time, lc, plot_time, plot_lc = cut_out_transits(time, lc, ingresses, egresses)
+
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 3)
+
+        print 'Interpolating...'
+        time, lc = interpolate(time, lc, approx_duration)
+
+        '''Folding lc ...'''
+        Fold(time, lc, bper, ingresses, egresses, plot_time, plot_lc, figure = 4)
     
     return 
 
@@ -154,6 +170,23 @@ def load_data(type):
         time = time[x[0]]; lc = lc[x[0]]
 
     return numpy.array(time), numpy.array(lc)
+
+# def medfilt (x, k):
+#     """Apply a length-k median filter to a 1D array x.
+#     Boundaries are extended by repeating endpoints.
+#     """
+#     assert k % 2 == 1, "Median filter length must be odd."
+#     assert x.ndim == 1, "Input must be one-dimensional."
+#     k2 = (k - 1) // 2
+#     y = numpy.zeros ((len (x), k), dtype=x.dtype)
+#     y[:,k2] = x
+#     for i in range (k2):
+#         j = k2 - i
+#         y[j:,i] = x[:-j]
+#         y[:j,i] = x[0]
+#         y[:-j,-(i+1)] = x[j:]
+#         y[-j:,-(i+1)] = x[-1]
+#     return numpy.median (y, axis=1)
 
 
 def compute_bls(time, lc, df, nf, nb, qmi, qma, fmin):
@@ -211,12 +244,11 @@ def compute_bls(time, lc, df, nf, nb, qmi, qma, fmin):
 
 def BLS(time, lc, df = 0.0001, nf = 500,  nb = 200, qmi = 0.01,\
         qma = 0.8, fmin = (1./(400.0*1.1))):
-    print df, nf, nb, qmi, qma, fmin
-
+    diffs = time[1:] - time[:-1]
 
     u = numpy.ones(len(time))
     v = numpy.ones(len(time))
-
+    
     BLS = bls.eebls(time, lc, u, v, nf, fmin, df, nb, qmi, qma)
     f = fmin + (numpy.arange(len(BLS[0])))*df
     
@@ -264,16 +296,19 @@ def Fold(time, lc, bper, ingresses, \
 
     # p.close(figure)
     # p.figure(figure)
-    # p.subplot(2,1,1)
-    # p.plot(phases, lc, 'k.')
-    # if figure == 3:
-    #     p.plot(plot_phase, plot_lc, 'r.')
-    # p.axvline(ingress, color = 'c')
-    # p.axvline(egress, color = 'c')
-    # p.xlabel('Phase')
-    # p.ylabel('Flux')
-    # p.xlim(ingress - (egress-ingress)*2, egress + (egress - ingress)*2)
-    # p.subplot(2,1,2)
+    #p.close(2)
+    p.figure(2)
+    #p.subplot(2,1,1)
+    p.subplot(3,1,figure-1)
+    p.plot(phases, lc, 'k.')
+    if figure == 3:
+        p.plot(plot_phase, plot_lc, 'r.')
+    p.axvline(ingress, color = 'c')
+    p.axvline(egress, color = 'c')
+    #p.xlabel('Phase')
+    p.ylabel('Flux')
+    p.xlim(ingress - (egress-ingress)*2, egress + (egress - ingress)*2)
+    # #p.subplot(2,1,2)
     # p.plot(time, lc, 'k.')
     # p.xlabel('Time (days)')
     # p.ylabel('Flux')
@@ -362,7 +397,7 @@ def interpolate(time, flux, approx_duration):
     # p.plot(fill_arr_t, fill_arr_f, 'k.')
         
 
-    return fill_arr_t, fill_arr_f
+    return tf.time, tf.flux
 
 if __name__ == '__main__':
     BLS()
