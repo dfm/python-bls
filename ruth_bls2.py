@@ -10,11 +10,14 @@ import bls
 import filter
 from numpy.random import normal
 import atpy
+import medium_filter
 
 print 'Dan rocks! x2'
 
 gap_days = 0.02043365  # long cadence
-ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj'
+#ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj'
+ascii_DIR = '/Users/angusr/angusr/data2/SAMSI'
+ascii_file = 'kplr000892203-2009131105131_llc.txt' 
 #ascii_file = 'KIC_005383248_long.dat'
 #ascii_file = 'k7372635.dat'
 ascii_DIR = '/Users/angusr/angusr/data2/SAMSI/ascii_inj/detrended'
@@ -28,12 +31,16 @@ def run_BLS(Baines = False, type = 'ascii'):
 
     print 'Loading lc...'
     time, lc = load_data(type)
+
+    p.close(6)
+    p.figure(6)
+    p.plot(time,lc)
     
     print 'Median normalise...'
     lc = lc/numpy.median(lc)
 
     print 'Median filter...'
-    
+    lc = medium_filter.detrend_using_mf(lc)
 
     ''' Define parameters '''
     min_period = 300
@@ -162,7 +169,7 @@ def load_data(type):
             line = line.strip()
             columns = line.split()
             time.append(float(columns[0][0:-1]))
-            lc.append(float(columns[2][0:-1]))
+            lc.append(float(columns[1][0:-1]))
         time = numpy.array(time); lc = numpy.array(lc)
 
         x = numpy.where(numpy.isfinite(time))
